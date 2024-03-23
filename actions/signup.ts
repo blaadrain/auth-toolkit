@@ -3,7 +3,7 @@
 import { getUserByEmail } from "@/data/user";
 import { db } from "@/lib/db";
 import { SignUpSchema, SignUpSchemaType } from "@/schemas";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const signup = async (values: SignUpSchemaType) => {
   const validatedFields = SignUpSchema.safeParse(values);
@@ -14,9 +14,9 @@ export const signup = async (values: SignUpSchemaType) => {
 
   const { name, email, password } = validatedFields.data;
 
-  const existingUser = await getUserByEmail(email);
+  const user = await getUserByEmail(email);
 
-  if (existingUser) return { error: "Email already exists" };
+  if (user) return { error: "Email already exists" };
 
   const hashedPassword = await bcrypt.hash(password, 10);
 

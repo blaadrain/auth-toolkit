@@ -15,12 +15,10 @@ import { LoginSchema, LoginSchemaType } from "@/schemas";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
-import { FormSuccess } from "../form-success";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 
 export const LoginForm = () => {
-  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [isLoading, startTransition] = useTransition();
 
@@ -33,13 +31,11 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: LoginSchemaType) => {
-    setSuccess("");
     setError("");
 
     startTransition(async () => {
-      login(values).then(({ error, success }) => {
-        if (success) setSuccess(success);
-        if (error) setError(error);
+      login(values).then((data) => {
+        if (data) setError(data.error);
       });
     });
   };
@@ -94,7 +90,6 @@ export const LoginForm = () => {
             />
           </div>
           <FormError message={error} />
-          <FormSuccess message={success} />
           <Button disabled={isLoading} type="submit" className="w-full">
             Login
           </Button>
