@@ -11,33 +11,34 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { LoginSchema, LoginSchemaType } from "@/schemas";
+import { SignUpSchema, SignUpSchemaType } from "@/schemas";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
-import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
+import { signup } from "@/actions/signup";
 
-export const LoginForm = () => {
+export const SignUpForm = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [isLoading, startTransition] = useTransition();
 
-  const form = useForm<LoginSchemaType>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<SignUpSchemaType>({
+    resolver: zodResolver(SignUpSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: LoginSchemaType) => {
+  const onSubmit = (values: SignUpSchemaType) => {
     setSuccess("");
     setError("");
 
     startTransition(async () => {
-      login(values).then(({ error, success }) => {
+      signup(values).then(({ error, success }) => {
         if (success) setSuccess(success);
         if (error) setError(error);
       });
@@ -46,14 +47,31 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Welcome back!"
-      backButtonLabel="Don't have an account?"
-      backButtonHref="/auth/signup"
+      headerLabel="Create your account"
+      backButtonLabel="Already have an account?"
+      backButtonHref="/auth/login"
       showSocial
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isLoading}
+                      placeholder="Tyler Durden"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -64,7 +82,7 @@ export const LoginForm = () => {
                     <Input
                       {...field}
                       disabled={isLoading}
-                      placeholder="johndoe@example.com"
+                      placeholder="tylerdurden@example.com"
                       type="email"
                       autoComplete="username"
                     />
@@ -96,7 +114,7 @@ export const LoginForm = () => {
           <FormError message={error} />
           <FormSuccess message={success} />
           <Button disabled={isLoading} type="submit" className="w-full">
-            Login
+            Sign Up
           </Button>
         </form>
       </Form>
