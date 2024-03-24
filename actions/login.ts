@@ -32,4 +32,6 @@ export const login = async (values: LoginSchemaType) => {
 
     throw error;
   }
+
+  return { success: "Successfully authenticated!" };
 };

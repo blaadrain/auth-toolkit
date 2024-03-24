@@ -17,8 +17,15 @@ import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 
 export const LoginForm = () => {
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider"
+      : "";
+
   const [error, setError] = useState("");
   const [isLoading, startTransition] = useTransition();
 
@@ -34,8 +41,8 @@ export const LoginForm = () => {
     setError("");
 
     startTransition(async () => {
-      login(values).then((data) => {
-        if (data) setError(data.error);
+      login(values).then(({ error }) => {
+        if (error) setError(error);
       });
     });
   };
@@ -89,7 +96,7 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          <FormError message={error} />
+          <FormError message={error || urlError} />
           <Button disabled={isLoading} type="submit" className="w-full">
             Login
           </Button>

@@ -15,13 +15,18 @@ import { SignUpSchema, SignUpSchemaType } from "@/schemas";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
-import { FormSuccess } from "../form-success";
 import { useState, useTransition } from "react";
 import { signup } from "@/actions/signup";
 import { login } from "@/actions/login";
+import { useSearchParams } from "next/navigation";
 
 export const SignUpForm = () => {
-  const [success, setSuccess] = useState("");
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider"
+      : "";
+
   const [error, setError] = useState("");
   const [isLoading, startTransition] = useTransition();
 
@@ -35,12 +40,10 @@ export const SignUpForm = () => {
   });
 
   const onSubmit = (values: SignUpSchemaType) => {
-    setSuccess("");
     setError("");
 
     startTransition(async () => {
-      signup(values).then(({ error, success }) => {
-        if (success) setSuccess(success);
+      signup(values).then(({ error }) => {
         if (error) setError(error);
       });
 
@@ -116,8 +119,7 @@ export const SignUpForm = () => {
               )}
             />
           </div>
-          <FormError message={error} />
-          <FormSuccess message={success} />
+          <FormError message={error || urlError} />
           <Button disabled={isLoading} type="submit" className="w-full">
             Sign Up
           </Button>

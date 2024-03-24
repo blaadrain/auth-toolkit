@@ -16,6 +16,14 @@ export default auth((req) => {
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
 
   if (isApiAuthRoute) {
+    if (
+      nextUrl.pathname.startsWith("/api/auth/auth/") &&
+      nextUrl.searchParams.get("error")
+    ) {
+      const url = nextUrl;
+      url.pathname = nextUrl.pathname.replace("/api/auth/", "");
+      return Response.redirect(url);
+    }
     return;
   }
 
