@@ -18,6 +18,7 @@ import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 import { useState, useTransition } from "react";
 import { signup } from "@/actions/signup";
+import { login } from "@/actions/login";
 
 export const SignUpForm = () => {
   const [success, setSuccess] = useState("");
@@ -42,6 +43,10 @@ export const SignUpForm = () => {
         if (success) setSuccess(success);
         if (error) setError(error);
       });
+
+      const { email, password } = values;
+
+      login({ email, password });
     });
   };
 
