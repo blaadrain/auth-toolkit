@@ -2,6 +2,8 @@
 
 import { getUserByEmail } from "@/data/user";
 import { db } from "@/lib/db";
+import { sendVerificationEmail } from "@/lib/mail";
+import { generateVerificationToken } from "@/lib/tokens";
 import { SignUpSchema, SignUpSchemaType } from "@/schemas";
 import bcrypt from "bcryptjs";
 
@@ -28,7 +30,9 @@ export const signup = async (values: SignUpSchemaType) => {
     },
   });
 
-  // TODO: Send verification token email
+  const verificationToken = await generateVerificationToken(email);
 
-  return { success: "Account created!" };
+  await sendVerificationEmail(verificationToken.email, verificationToken.token);
+
+  return { success: "A confirmation email has been sent" };
 };

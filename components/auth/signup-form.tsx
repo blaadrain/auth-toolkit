@@ -17,8 +17,8 @@ import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { useState, useTransition } from "react";
 import { signup } from "@/actions/signup";
-import { login } from "@/actions/login";
 import { useSearchParams } from "next/navigation";
+import { FormSuccess } from "../form-success";
 
 export const SignUpForm = () => {
   const searchParams = useSearchParams();
@@ -27,6 +27,7 @@ export const SignUpForm = () => {
       ? "Email already in use with different provider"
       : "";
 
+  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [isLoading, startTransition] = useTransition();
 
@@ -40,16 +41,14 @@ export const SignUpForm = () => {
   });
 
   const onSubmit = (values: SignUpSchemaType) => {
+    setSuccess("");
     setError("");
 
     startTransition(async () => {
-      signup(values).then(({ error }) => {
+      signup(values).then(({ success, error }) => {
+        if (success) setSuccess(success);
         if (error) setError(error);
       });
-
-      const { email, password } = values;
-
-      login({ email, password });
     });
   };
 
@@ -119,6 +118,7 @@ export const SignUpForm = () => {
               )}
             />
           </div>
+          <FormSuccess message={success} />
           <FormError message={error || urlError} />
           <Button disabled={isLoading} type="submit" className="w-full">
             Sign Up

@@ -18,6 +18,7 @@ import { FormError } from "../form-error";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
+import { FormSuccess } from "../form-success";
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -26,6 +27,7 @@ export const LoginForm = () => {
       ? "Email already in use with different provider"
       : "";
 
+  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [isLoading, startTransition] = useTransition();
 
@@ -38,10 +40,12 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: LoginSchemaType) => {
+    setSuccess("");
     setError("");
 
     startTransition(async () => {
-      login(values).then(({ error }) => {
+      login(values).then(({ success, error }) => {
+        if (success) setSuccess(success);
         if (error) setError(error);
       });
     });
@@ -96,6 +100,7 @@ export const LoginForm = () => {
               )}
             />
           </div>
+          <FormSuccess message={success} />
           <FormError message={error || urlError} />
           <Button disabled={isLoading} type="submit" className="w-full">
             Login
