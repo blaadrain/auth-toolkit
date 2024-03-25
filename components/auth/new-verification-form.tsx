@@ -12,8 +12,8 @@ export const NewVerificationForm = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  const [error, setError] = useState<string | undefined>();
-  const [success, setSuccess] = useState<string | undefined>();
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
 
   const onSubmit = useCallback(() => {
     if (!token) {
@@ -22,9 +22,9 @@ export const NewVerificationForm = () => {
     }
 
     newVerification(token)
-      .then((data) => {
-        setSuccess(data.success);
-        setError(data.error);
+      .then(({ success, error }) => {
+        setSuccess(success);
+        setError(error);
       })
       .catch(() => {
         setError("Something went wrong");

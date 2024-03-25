@@ -27,8 +27,8 @@ export const SignUpForm = () => {
       ? "Email already in use with different provider"
       : "";
 
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [error, setError] = useState<string | undefined>("");
   const [isLoading, startTransition] = useTransition();
 
   const form = useForm<SignUpSchemaType>({
@@ -46,8 +46,8 @@ export const SignUpForm = () => {
 
     startTransition(async () => {
       signup(values).then(({ success, error }) => {
-        if (success) setSuccess(success);
-        if (error) setError(error);
+        setSuccess(success);
+        setError(error);
       });
     });
   };
@@ -108,7 +108,7 @@ export const SignUpForm = () => {
                     <Input
                       {...field}
                       disabled={isLoading}
-                      placeholder="********"
+                      placeholder="**********"
                       type="password"
                       autoComplete="current-password"
                     />

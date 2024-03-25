@@ -19,6 +19,7 @@ import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { FormSuccess } from "../form-success";
+import Link from "next/link";
 
 export const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -27,8 +28,8 @@ export const LoginForm = () => {
       ? "Email already in use with different provider"
       : "";
 
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [error, setError] = useState<string | undefined>("");
   const [isLoading, startTransition] = useTransition();
 
   const form = useForm<LoginSchemaType>({
@@ -46,8 +47,8 @@ export const LoginForm = () => {
     startTransition(async () => {
       login(values)
         .then(({ success, error }) => {
-          if (success) setSuccess(success);
-          if (error) setError(error);
+          setSuccess(success);
+          setError(error);
         })
         .catch((error) => console.log(error));
     });
@@ -92,11 +93,19 @@ export const LoginForm = () => {
                     <Input
                       {...field}
                       disabled={isLoading}
-                      placeholder="********"
+                      placeholder="**********"
                       type="password"
                       autoComplete="current-password"
                     />
                   </FormControl>
+                  <Button
+                    size="sm"
+                    variant="link"
+                    asChild
+                    className="px-0 font-normal text-neutral-500"
+                  >
+                    <Link href="/auth/reset">Forgot password?</Link>
+                  </Button>
                   <FormMessage />
                 </FormItem>
               )}

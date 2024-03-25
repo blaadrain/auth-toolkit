@@ -3,8 +3,6 @@
 import { db } from "@/lib/db";
 import { getUserByEmail } from "@/data/user";
 import { getVerificationTokenByToken } from "@/data/verification-token";
-import { signIn } from "@/auth";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 
 export const newVerification = async (token: string) => {
   const existingToken = await getVerificationTokenByToken(token);

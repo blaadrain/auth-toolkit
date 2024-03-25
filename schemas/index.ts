@@ -13,5 +13,17 @@ export const SignUpSchema = z.object({
     .min(6, { message: "At least 6 characters are required" }),
 });
 
+export const ResetSchema = z.object({
+  email: z.string().email({ message: "Email is required" }),
+});
+
+export const NewPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(6, { message: "At least 6 characters are required" }),
+});
+
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type SignUpSchemaType = z.infer<typeof SignUpSchema>;
+export type ResetSchemaType = z.infer<typeof ResetSchema>;
+export type NewPasswordSchemaType = z.infer<typeof NewPasswordSchema>;
