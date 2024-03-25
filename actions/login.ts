@@ -5,8 +5,14 @@ import { signIn } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
 import { getUserByEmail } from "@/data/user";
-import { generateVerificationToken } from "@/lib/tokens";
-import { sendVerificationEmail } from "@/lib/mail";
+import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail";
+import {
+  generateVerificationToken,
+  generateTwoFactorToken,
+} from "@/lib/tokens";
+import { getTwoFactorTokenByEmail } from "@/data/two-factor-token";
+import { db } from "@/lib/db";
+import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 
 export const login = async (values: LoginSchemaType) => {
   const validatedFields = LoginSchema.safeParse(values);
@@ -15,7 +21,7 @@ export const login = async (values: LoginSchemaType) => {
     return { error: "Invalid fields" };
   }
 
-  const { email, password } = validatedFields.data;
+  const { email, password, code } = validatedFields.data;
 
   const user = await getUserByEmail(email);
 
@@ -32,6 +38,42 @@ export const login = async (values: LoginSchemaType) => {
     );
 
     return { success: "A confirmation email has been sent" };
+  }
+
+  if (user.isTwoFactorEnabled && user.email) {
+    if (code) {
+      const twoFactorToken = await getTwoFactorTokenByEmail(user.email);
+
+      if (!twoFactorToken || twoFactorToken.token !== code) {
+        return { error: "Incorrect code" };
+      }
+
+      if (new Date(twoFactorToken.expires) < new Date()) {
+        return { error: "Code expired" };
+      }
+
+      await db.twoFactorToken.delete({
+        where: { id: twoFactorToken.id },
+      });
+
+      const confirmation = await getTwoFactorConfirmationByUserId(user.id);
+
+      if (confirmation) {
+        await db.twoFactorConfirmation.delete({
+          where: { id: confirmation.id },
+        });
+      }
+
+      await db.twoFactorConfirmation.create({
+        data: { userId: user.id },
+      });
+    } else {
+      const twoFactorToken = await generateTwoFactorToken(user.email);
+
+      await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token);
+
+      return { twoFactor: true };
+    }
   }
 
   try {
