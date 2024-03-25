@@ -44,10 +44,12 @@ export const LoginForm = () => {
     setError("");
 
     startTransition(async () => {
-      login(values).then(({ success, error }) => {
-        if (success) setSuccess(success);
-        if (error) setError(error);
-      });
+      login(values)
+        .then(({ success, error }) => {
+          if (success) setSuccess(success);
+          if (error) setError(error);
+        })
+        .catch((error) => console.log(error));
     });
   };
 
