@@ -101,6 +101,7 @@ export const LoginForm = () => {
                           disabled={isLoading}
                           placeholder="john.doe@example.com"
                           type="email"
+                          autoComplete="username"
                         />
                       </FormControl>
                       <FormMessage />
@@ -117,8 +118,9 @@ export const LoginForm = () => {
                         <Input
                           {...field}
                           disabled={isLoading}
-                          placeholder="******"
+                          placeholder="**********"
                           type="password"
+                          autoComplete="current-password"
                         />
                       </FormControl>
                       <Button
