@@ -11,7 +11,7 @@ Key Features:
 - Email verification
 - Two factor verification
 - Password change & reset functionality
-- Emails sending using Resend
+- Sending emails using Resend
 - User roles (Admin & User)
 - Next.js middleware
 - Next-auth session & callbacks
