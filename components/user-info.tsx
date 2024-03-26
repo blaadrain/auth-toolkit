@@ -7,6 +7,7 @@ interface UserInfoProps {
   user?: DefaultSession["user"] & {
     role: UserRole;
     isTwoFactorEnabled: boolean;
+    isOAuth: boolean;
   };
   label: string;
 }

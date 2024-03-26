@@ -5,12 +5,14 @@ import { db } from "./lib/db";
 import { getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
+import { getAccountByUserId } from "./data/account";
 
 declare module "next-auth" {
   interface Session {
     user: {
       role: UserRole;
       isTwoFactorEnabled: boolean;
+      isOAuth: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -68,6 +70,9 @@ export const {
 
       if (session.user) {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
+        session.user.name = token.name;
+        session.user.isOAuth = token.isOAuth as boolean;
+        if (token.email) session.user.email = token.email;
       }
 
       return session;
@@ -79,7 +84,12 @@ export const {
 
       if (!user) return token;
 
+      const account = await getAccountByUserId(user.id);
+
+      token.name = user.name;
+      token.email = user.email;
       token.role = user.role;
+      token.isOAuth = !!account;
       token.isTwoFactorEnabled = user.isTwoFactorEnabled;
 
       return token;
