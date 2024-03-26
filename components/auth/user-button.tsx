@@ -8,7 +8,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { LogOut, User } from "lucide-react";
-import { useCurrentUser } from "@/hooks/use-user";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { LogoutButton } from "./logout-button";
 
 export const UserButton = () => {
